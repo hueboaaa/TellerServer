@@ -6,9 +6,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginServiceImpl implements LoginService{
 
+    private final ApiParse apiParse;
+
+    public LoginServiceImpl(ApiParse apiParse) {
+        this.apiParse = apiParse;
+    }
+
     @Override
     public String kakao(String code) {
-        ApiParse.kakao_login_connect(code);
+        apiParse.kakaoUserInfo(code);
 
         return null;
     }

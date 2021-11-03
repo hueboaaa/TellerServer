@@ -1,22 +1,27 @@
 package com.teller.tellerserver;
 
-import org.springframework.data.querydsl.binding.MultiValueBinding;
-import org.springframework.http.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teller.tellerserver.dto.Kakao.KaKaoDto;
+import com.teller.tellerserver.dto.Kakao.KaKaoUserInfo;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-
+@Component
 public class ApiParse {
 
     private static final String KAKAO_REQUEST_URL =
             "https://kauth.kakao.com/oauth/token";
 
+    private static final String KAKAO_REQUEST_USERINFO = "https://kapi.kakao.com/v2/user/me";
 
-    public static void kakao_login_connect(String code){
+
+    public String kakao_login_connect(String code){
 
         //Http 헤더에 JSON 정보를 넣어줌
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -38,6 +43,43 @@ public class ApiParse {
 
         System.out.println("token = " + token);
 
+        ObjectMapper obj = new ObjectMapper();
+        try{
+            KaKaoDto kaKaoDto = obj.readValue(token.getBody(), KaKaoDto.class);
+            System.out.println("kaKaoDto.getAccess_token() = " + kaKaoDto.getAccess_token());
+            return kaKaoDto.getAccess_token();
+        }catch(Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
+
+    public void kakaoUserInfo(String code){
+        String Access_token = this.kakao_login_connect(code);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + Access_token);
+
+        HttpEntity<MultiValueMap<String,String>> kakao = new HttpEntity<>(httpHeaders);
+
+        ResponseEntity<String> user = restTemplate.exchange(KAKAO_REQUEST_USERINFO, HttpMethod.POST, kakao, String.class);
+        System.out.println("user = " + user);
+
+        ObjectMapper obj = new ObjectMapper();
+
+        try{
+            KaKaoUserInfo kaKaoUserInfo = obj.readValue(user.getBody(), KaKaoUserInfo.class);
+            System.out.println("KaKaoUserInfo.kakao_account = " + kaKaoUserInfo.kakao_account.getEmail() + "," + kaKaoUserInfo.properties.getNickname());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+
+
+    }
+
 
 }
