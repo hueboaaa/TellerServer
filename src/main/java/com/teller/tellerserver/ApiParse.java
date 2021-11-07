@@ -3,6 +3,7 @@ package com.teller.tellerserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teller.tellerserver.dto.Kakao.KaKaoDto;
 import com.teller.tellerserver.dto.Kakao.KaKaoUserInfo;
+import com.teller.tellerserver.dto.LoginDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -47,6 +48,7 @@ public class ApiParse {
         try{
             KaKaoDto kaKaoDto = obj.readValue(token.getBody(), KaKaoDto.class);
             System.out.println("kaKaoDto.getAccess_token() = " + kaKaoDto.getAccess_token());
+            System.out.println("kaKaoDto = " + kaKaoDto);
             return kaKaoDto.getAccess_token();
         }catch(Exception e){
             e.printStackTrace();
@@ -54,7 +56,7 @@ public class ApiParse {
         }
     }
 
-    public void kakaoUserInfo(String code){
+    public LoginDto kakaoUserInfo(String code){
         String Access_token = this.kakao_login_connect(code);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -68,17 +70,19 @@ public class ApiParse {
         System.out.println("user = " + user);
 
         ObjectMapper obj = new ObjectMapper();
-
+        LoginDto loginDto = new LoginDto();
         try{
-            KaKaoUserInfo kaKaoUserInfo = obj.readValue(user.getBody(), KaKaoUserInfo.class);
-            System.out.println("KaKaoUserInfo.kakao_account = " + kaKaoUserInfo.kakao_account.getEmail() + "," + kaKaoUserInfo.properties.getNickname());
+            KaKaoUserInfo kaUserInfo = obj.readValue(user.getBody(), KaKaoUserInfo.class);
+            System.out.println("kaUserInfo = " + kaUserInfo);
+            System.out.println("KaKaoUserInfo.kakao_account = " + kaUserInfo.kakao_account.getEmail() + "," + kaUserInfo.properties.getNickname());
+            loginDto = new LoginDto();
+            loginDto.setId(kaUserInfo.getId());
+            loginDto.setEmail(kaUserInfo.kakao_account.getEmail());
+            loginDto.setNickname(kaUserInfo.properties.getNickname());
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
-
+        return loginDto;
     }
 
 

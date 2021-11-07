@@ -1,6 +1,7 @@
 package com.teller.tellerserver.service;
 
 import com.teller.tellerserver.ApiParse;
+import com.teller.tellerserver.dto.LoginDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,9 +14,9 @@ public class LoginServiceImpl implements LoginService{
     }
 
     @Override
-    public String kakao(String code) {
-        apiParse.kakaoUserInfo(code);
+    public LoginDto kakao(String code) {
+        LoginDto loginDto = apiParse.kakaoUserInfo(code);
 
-        return null;
+        return loginDto;
     }
 }
