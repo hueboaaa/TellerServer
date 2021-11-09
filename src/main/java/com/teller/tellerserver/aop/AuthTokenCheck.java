@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class AuthTokenCheck {
 
-    @Around("execution(* com.teller.tellerserver.controller.*.*(..))")
+//    @Around("execution(* com.teller.tellerserver.controller.*.*(..))")
     public Object tokenCheck(ProceedingJoinPoint pjp) throws Throwable{
         HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         String token = req.getHeader("token");

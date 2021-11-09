@@ -1,13 +1,12 @@
 package com.teller.tellerserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teller.tellerserver.domain.SocialPath;
+import com.teller.tellerserver.dto.Google.GoogleRequestDto;
 import com.teller.tellerserver.dto.Kakao.KaKaoDto;
 import com.teller.tellerserver.dto.Kakao.KaKaoUserInfo;
 import com.teller.tellerserver.dto.LoginDto;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -70,20 +69,38 @@ public class ApiParse {
         System.out.println("user = " + user);
 
         ObjectMapper obj = new ObjectMapper();
-        LoginDto loginDto = new LoginDto();
+
         try{
             KaKaoUserInfo kaUserInfo = obj.readValue(user.getBody(), KaKaoUserInfo.class);
             System.out.println("kaUserInfo = " + kaUserInfo);
             System.out.println("KaKaoUserInfo.kakao_account = " + kaUserInfo.kakao_account.getEmail() + "," + kaUserInfo.properties.getNickname());
-            loginDto = new LoginDto();
-            loginDto.setId(kaUserInfo.getId());
-            loginDto.setEmail(kaUserInfo.kakao_account.getEmail());
-            loginDto.setNickname(kaUserInfo.properties.getNickname());
+            LoginDto loginDto = new LoginDto(kaUserInfo.getId(), kaUserInfo.kakao_account.getEmail(), kaUserInfo.properties.getNickname(), SocialPath.KAKAO);
+            return loginDto;
         }catch(Exception e){
             e.printStackTrace();
+            return null;
         }
-        return loginDto;
+
     }
 
+    public String google_login_connect(String code){
+        RestTemplate rs = new RestTemplate();
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", "274415327987-cp6jv7c0q6o7kr2cv73sauimt7v60m6f.apps.googleusercontent.com");
+        params.add("redirect_uri", "http://localhost:8083/googleLogin");
+        params.add("client_secret", "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");
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, httpHeaders);
+
+        ResponseEntity<String> response = rs.postForEntity("https://www.googleapis.com/oauth2/v4/token", request, String.class);
+        System.out.println("response.getBody() = " + response.getBody());
+        return null;
+    }
 
 }
