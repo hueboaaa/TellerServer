@@ -2,10 +2,7 @@ package com.teller.tellerserver.domain;
 
 import lombok.Getter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,5 +21,7 @@ public class User {
     private LocalDateTime user_del_date;
     private String user_device;
     private String user_is_proud;
-    private String user_social_path;
+
+    @Enumerated(EnumType.STRING)
+    private SocialPath socialPath;
 }

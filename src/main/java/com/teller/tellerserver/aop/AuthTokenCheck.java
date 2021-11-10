@@ -22,9 +22,7 @@ public class AuthTokenCheck {
         HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
         String token = req.getHeader("token");
         if(token == null || token.equals("")){
-            return ResponseDto.builder()
-                              .message("로그인 하세요")
-                              .build();
+            return new ResponseDto("로그인 하세요");
         }
         Object[] args = pjp.getArgs();
         Object proceed = pjp.proceed(args);

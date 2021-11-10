@@ -1,8 +1,10 @@
-package com.teller.tellerserver;
+package com.teller.tellerserver.parse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teller.tellerserver.ResponseDto;
 import com.teller.tellerserver.domain.SocialPath;
 import com.teller.tellerserver.dto.Google.GoogleRequestDto;
+import com.teller.tellerserver.dto.Google.GoogleResponseDto;
 import com.teller.tellerserver.dto.Kakao.KaKaoDto;
 import com.teller.tellerserver.dto.Kakao.KaKaoUserInfo;
 import com.teller.tellerserver.dto.LoginDto;
@@ -13,7 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class ApiParse {
+public class KakaoParse {
 
     private static final String KAKAO_REQUEST_URL =
             "https://kauth.kakao.com/oauth/token";
@@ -83,24 +85,6 @@ public class ApiParse {
 
     }
 
-    public String google_login_connect(String code){
-        RestTemplate rs = new RestTemplate();
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", "274415327987-cp6jv7c0q6o7kr2cv73sauimt7v60m6f.apps.googleusercontent.com");
-        params.add("redirect_uri", "http://localhost:8083/googleLogin");
-        params.add("client_secret", "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");
-        params.add("code", code);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, httpHeaders);
-
-        ResponseEntity<String> response = rs.postForEntity("https://www.googleapis.com/oauth2/v4/token", request, String.class);
-        System.out.println("response.getBody() = " + response.getBody());
-        return null;
-    }
 
 }
