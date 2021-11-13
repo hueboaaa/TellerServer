@@ -26,7 +26,7 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public ResponseDto google(String code) {
-        ResponseDto googleResponseDto = googleParse.google_login_connect(code);
-        return googleResponseDto;
+         return googleParse.findGoogleUserInfo(code);
+
     }
 }

@@ -3,6 +3,7 @@ package com.teller.tellerserver.parse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teller.tellerserver.ResponseDto;
 import com.teller.tellerserver.dto.Google.GoogleResponseDto;
+import com.teller.tellerserver.dto.Google.GoogleUserInfo;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class GoogleParse {
@@ -36,19 +38,35 @@ public class GoogleParse {
             ObjectMapper obj = new ObjectMapper();
             GoogleResponseDto googleResponseDto = obj.readValue(response.getBody(), GoogleResponseDto.class);
             System.out.println("googleResponseDto.getAccess_token() = " + googleResponseDto.getAccess_token());
-            return googleResponseDto.getAccess_token();
+            return googleResponseDto.getId_token();
         }catch (Exception e){
             e.printStackTrace();
             return null;
         }
     }
 
-    public void findGoogleUserInfo(String code){
+    public ResponseDto findGoogleUserInfo(String code){
         String Access_token = this.google_login_connect(code);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " +Access_token);
+
+        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo").queryParam("id_token", Access_token).toUriString();
+
+
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add("Authorization", "Bearer " +Access_token);
 
         RestTemplate rs = new RestTemplate();
-        rs.getForEntity("https://www.googleapis.com/oauth2/v3/userinfo"+Access_token, String.class);
+        String forObject = rs.getForObject(requestUrl, String.class);
+        ObjectMapper obj = new ObjectMapper();
+        try{
+            GoogleUserInfo googleUserInfo = obj.readValue(forObject, GoogleUserInfo.class);
+            System.out.println("googleUserInfo = " + googleUserInfo);
+            return googleUserInfo;
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseDto("JSON 파싱 에러");
+        }
+        
+//        ResponseEntity<String> response = rs.getForEntity("https://www.googleapis.com/auth/userinfo.email" + Access_token, String.class);
+//        System.out.println("response = " + response.getBody());
     }
 }
