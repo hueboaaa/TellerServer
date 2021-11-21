@@ -48,7 +48,11 @@ public class GoogleParse {
     public ResponseDto findGoogleUserInfo(String code){
         String Access_token = this.google_login_connect(code);
 
-        String requestUrl = UriComponentsBuilder.fromHttpUrl("https://oauth2.googleapis.com/tokeninfo").queryParam("id_token", Access_token).toUriString();
+        String requestUrl =
+                UriComponentsBuilder
+                        .fromHttpUrl("https://oauth2.googleapis.com/tokeninfo")
+                        .queryParam("id_token", Access_token)
+                        .toUriString();
 
 
 //        HttpHeaders httpHeaders = new HttpHeaders();
@@ -56,6 +60,7 @@ public class GoogleParse {
 
         RestTemplate rs = new RestTemplate();
         String forObject = rs.getForObject(requestUrl, String.class);
+        System.out.println("forObject = " + forObject);
         ObjectMapper obj = new ObjectMapper();
         try{
             GoogleUserInfo googleUserInfo = obj.readValue(forObject, GoogleUserInfo.class);

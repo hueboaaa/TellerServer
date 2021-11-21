@@ -10,6 +10,9 @@ public class GoogleUserInfo extends ResponseDto {
     private String azp;
     private String aud;
     private String sub;
+    private String hd;
+    private String email;
+    private String email_verified;
     private String at_hash;
     private String name;
     private String picture;

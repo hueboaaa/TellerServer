@@ -1,19 +1,13 @@
 package com.teller.tellerserver.repository;
 
 import com.teller.tellerserver.domain.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    private final EntityManager em;
-
-    public void save(User user){
-        em.persist(user);
-    }
 
 }

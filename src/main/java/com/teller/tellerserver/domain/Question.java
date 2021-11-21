@@ -16,6 +16,8 @@ public class Question {
     @JoinColumn(name = "user_id")
     private User user;
 
+
+
     @OneToMany(mappedBy = "question")
     private List<Answer> answer = new ArrayList<>();
 }
